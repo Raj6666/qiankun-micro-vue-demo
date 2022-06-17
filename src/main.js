@@ -9,11 +9,15 @@ import Interceptors from './request/interceptors'; // 请求拦截
 import '@/assets/styles/border.css'; // 全局border样式重置
 import Api from '@/apis/index.js'; // 全局注册api接口对象
 
+// import buriedpoint from '@/plugins/buriedpoint';
+
 Vue.prototype.Api = Api;
 Vue.config.productionTip = false;
 Vue.use(Interceptors.request); // 请求拦截器
 Vue.use(Interceptors.response); // 相应拦截器
 require('./components/index.js'); // 全局注册公共组件
+
+// Vue.use(buriedpoint);
 
 // 仅在开发环境时引入mock
 if (process.env.NODE_ENV === 'local') {
@@ -33,14 +37,18 @@ let instance = null;
 // 1. 将注册方法用函数包裹，供后续主应用与独立运行调用
 function render(props = {}) {
   // 解析主应用传入的值并注册vue实例
-  console.log('开始渲染');
-  const {container} = props;
+  const {container, microModule} = props;
+  console.log('开始渲染', microModule);
   instance = new Vue({
     router,
     store,
     authGuard,
     render: (h) => h(App),
   }).$mount(container ? container.querySelector('#app') : '#app');
+  if (microModule) {
+    console.log('更新state', {microModule});
+    store.commit('setMicroModule', {microModule});
+  }
 }
 
 // 判断是否在乾坤环境下，非乾坤环境下独立运行

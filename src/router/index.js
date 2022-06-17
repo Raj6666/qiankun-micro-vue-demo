@@ -21,6 +21,11 @@ const routes = [
     component: Home,
   },
   {
+    path: '/item/:id',
+    name: 'Item',
+    component: Home,
+  },
+  {
     path: '/StatusError', // 状态错误页面
     name: 'StatusError',
     component: StatusError,

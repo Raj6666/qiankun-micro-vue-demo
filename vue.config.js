@@ -35,12 +35,6 @@ module.exports = {
       config.resolve.symlinks(true); // 修复热更新失效
     }
 
-    // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
-    config.plugin('html').tap((args) => {
-      // 修复 Lazy loading routes Error
-      args[0].chunksSortMode = 'none';
-      return args;
-    });
     config.resolve.alias // 添加别名
       .set('@', resolve('src'))
       .set('@assets', resolve('src/assets'))
@@ -48,31 +42,6 @@ module.exports = {
       .set('@views', resolve('src/views'))
       .set('@store', resolve('src/store'))
       .set('@utils', resolve('src/utils'));
-    // 压缩图片
-    // 需要 npm i -D image-webpack-loader
-    // config.module
-    //   .rule('images')
-    //   .use('image-webpack-loader')
-    //   .loader('image-webpack-loader')
-    //   .options({
-    //     mozjpeg: {
-    //       progressive: true,
-    //       quality: 65,
-    //     },
-    //     optipng: {
-    //       enabled: false,
-    //     },
-    //     pngquant: {
-    //       quality: [0.65, 0.9],
-    //       speed: 4,
-    //     },
-    //     gifsicle: {
-    //       interlaced: false,
-    //     },
-    //     webp: {
-    //       quality: 75,
-    //     },
-    //   });
     // 打包分析
     // 打包之后自动生成一个名叫report.html文件(可忽视)
     if (IS_PROD) {
@@ -85,7 +54,7 @@ module.exports = {
     // 通过 externals 加载外部 CDN 资源
     if (IS_PROD) {
       config.set('externals', {
-        vue: 'Vue2',
+        // vue: 'Vue2',
         // 'vue-router': 'VueRouter',
         // vuex: 'Vuex',
         // axios: 'axios',
@@ -149,25 +118,22 @@ module.exports = {
     config.plugins = [...config.plugins, ...plugins];
 
     // 加js的hash  参考：https://blog.csdn.net/weixin_34403976/article/details/118091790
-    // config.output.filename = IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`;
-    // config.output.chunkFilename = IS_PROD
-    //   ? `vvic_m_[name].[contenthash].js`
-    //   : `vvic_m_[name].[hash].js`;
+    config.output.filename = IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`;
+    config.output.chunkFilename = IS_PROD
+      ? `vvic_m_[name].[contenthash].js`
+      : `vvic_m_[name].[hash].js`;
     // 微应用注册vueMicroApp
-    // config.output.library = 'vueMicroApp'; // 微应用的包名，这里与主应用中注册的微应用名称一致
-    // config.output.libraryTarget = 'umd';// 这里设置为umd意思是在 AMD 或 CommonJS 的 require 之后可访问。
-    // config.output.jsonpFunction = `webpackJsonp_${name}`; // webpack用来异步加载chunk的JSONP 函数。
-    // delete config.output.globalObject
-    config.output = {
-      ...config.output,
-      filename: IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`,
-      chunkFilename: IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`,
-      library: 'vueMicroApp',
-      libraryTarget: 'umd',
-      jsonpFunction: `webpackJsonp_${name}`,
-      globalObject: 'this',
-    };
-    console.log(config.output);
+    config.output.library = `vueMicroApp`; // 微应用的包名，这里与主应用中注册的微应用名称一致
+    config.output.libraryTarget = 'window'; // 这里设置为umd意思是在 AMD 或 CommonJS 的 require 之后可访问。
+    config.output.jsonpFunction = `webpackJsonp_${name}`; // webpack用来异步加载chunk的JSONP 函数。
+    // config.output = {
+    //   ...config.output,
+    //   filename: IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`,
+    //   chunkFilename: IS_PROD ? `vvic_m_[name].[contenthash].js` : `vvic_m_[name].[hash].js`,
+    //   library: 'vueMicroApp',
+    //   libraryTarget: 'umd',
+    //   jsonpFunction: `webpackJsonp_${name}`,
+    // };
   },
   css: {
     extract: IS_PROD,
